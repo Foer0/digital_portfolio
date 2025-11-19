@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item active">Админ-панель</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Админ-панель</h1>
+
+    <!-- Статистика -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card bg-primary text-white hover-scale">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="text-white-50 small">Пользователи</div>
+                            <div class="h5">{{ stats.users_count }}</div>
+                        </div>
+                        <div class="col-3 text-end">
+                            <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card bg-success text-white hover-scale">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="text-white-50 small">Компании</div>
+                            <div class="h5">{{ stats.companies_count }}</div>
+                        </div>
+                        <div class="col-3 text-end">
+                            <i class="bi bi-building" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card bg-warning text-white hover-scale">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="text-white-50 small">Вакансии</div>
+                            <div class="h5">{{ stats.vacancies_count }}</div>
+                        </div>
+                        <div class="col-3 text-end">
+                            <i class="bi bi-briefcase-fill" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card bg-danger text-white hover-scale">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="text-white-50 small">На модерации</div>
+                            <div class="h5">{{ stats.pending_vacancies }}</div>
+                        </div>
+                        <div class="col-3 text-end">
+                            <i class="bi bi-clock-fill" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Последние пользователи -->
+        <div class="col-lg-6 mb-4">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h6 class="mb-0">Последние пользователи</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_users %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Имя</th>
+                                    <th>Email</th>
+                                    <th>Роль</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users %}
+                                <tr>
+                                    <td>{{ user.name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <span class="badge {% if user.role == 'employer' %}bg-success{% elif user.role == 'admin' %}bg-dark{% else %}bg-primary{% endif %}">
+                                            {{ user.role }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ 'Активен' if user.is_active else 'Неактивен' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center text-muted">Нет пользователей</p>
+                    {% endif %}
+                    <div class="text-center">
+                        <a href="{{ url_for('admin.manage_users') }}" class="btn btn-sm btn-admin-action">
+                            Все пользователи
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Последние вакансии -->
+        <div class="col-lg-6 mb-4">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h6 class="mb-0">Последние вакансии</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_vacancies %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Должность</th>
+                                    <th>Компания</th>
+                                    <th>Статус</th>
+                                    <th>Модерация</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vacancy in recent_vacancies %}
+                                <tr>
+                                    <td>{{ vacancy.title }}</td>
+                                    <td>{{ vacancy.company.company_name }}</td>
+                                    <td>
+                                        <span class="badge {% if vacancy.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ 'Активна' if vacancy.is_active else 'Неактивна' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if vacancy.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ 'Одобрена' if vacancy.is_approved else 'На модерации' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center text-muted">Нет вакансий</p>
+                    {% endif %}
+                    <div class="text-center">
+                        <a href="{{ url_for('admin.manage_vacancies') }}" class="btn btn-sm btn-admin-action">
+                            Все вакансии
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h6 class="mb-0">Быстрые действия</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-admin-pulse w-100">
+                                <i class="bi bi-people-fill"></i><br>
+                                Управление пользователями
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin.manage_vacancies') }}" class="btn btn-admin-pulse w-100">
+                                <i class="bi bi-briefcase-fill"></i><br>
+                                Управление вакансиями
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin.manage_portfolios') }}" class="btn btn-admin-pulse w-100">
+                                <i class="bi bi-file-person-fill"></i><br>
+                                Просмотр портфолио
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin.manage_companies') }}" class="btn btn-admin-pulse w-100">
+                                <i class="bi bi-buildings"></i><br>
+                                Управление компаниями
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('index') }}" class="btn btn-admin-pulse w-100">
+                                <i class="bi bi-house-fill"></i><br>
+                                На сайт
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

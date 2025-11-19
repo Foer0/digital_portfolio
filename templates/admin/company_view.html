@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.admin_panel') }}">Админ-панель</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('admin.manage_companies') }}">Компании</a></li>
+<li class="breadcrumb-item active">Просмотр компании</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h4 class="mb-0">Профиль компании</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Информация о владельце -->
+                    <div class="row mb-4 p-3 bg-light rounded">
+                        <div class="col-md-6">
+                            <h5>Информация о владельце</h5>
+                            <p><strong>Имя:</strong> {{ company.user.name }}</p>
+                            <p><strong>Email:</strong> {{ company.user.email }}</p>
+                            <p><strong>Роль:</strong> {{ company.user.role }}</p>
+                            <p><strong>Зарегистрирован:</strong> {{ company.user.created_at.strftime('%d.%m.%Y') if company.user.created_at else 'Не указана' }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="floating-element">
+                                <i class="bi bi-building" style="font-size: 4rem; color: var(--light-green);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Основная информация о компании -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h2>{{ company.company_name }}</h2>
+
+                            {% if company.industry %}
+                            <div class="mb-3">
+                                <strong>Отрасль:</strong> {{ company.industry }}
+                            </div>
+                            {% endif %}
+
+                            {% if company.description %}
+                            <div class="mb-3">
+                                <strong>Описание:</strong>
+                                <p>{{ company.description }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Контактная информация -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Контактная информация</h5>
+                        <div class="row">
+                            {% if company.website %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Веб-сайт:</strong>
+                                <a href="{{ company.website }}" target="_blank">{{ company.website }}</a>
+                            </div>
+                            {% endif %}
+                            {% if company.contact_email %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Контактный email:</strong> {{ company.contact_email }}
+                            </div>
+                            {% endif %}
+                            {% if company.phone %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Телефон:</strong> {{ company.phone }}
+                            </div>
+                            {% endif %}
+                            {% if company.address %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Адрес:</strong> {{ company.address }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Вакансии компании -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Вакансии компании ({{ vacancies|length }})</h5>
+                        {% if vacancies %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Должность</th>
+                                        <th>Статус</th>
+                                        <th>Модерация</th>
+                                        <th>Дата создания</th>
+                                        <th>Откликов</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vacancy in vacancies %}
+                                    <tr>
+                                        <td>{{ vacancy.title }}</td>
+                                        <td>
+                                            <span class="badge {% if vacancy.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ 'Активна' if vacancy.is_active else 'Неактивна' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if vacancy.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                                                {{ 'Одобрена' if vacancy.is_approved else 'На модерации' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ vacancy.created_at.strftime('%d.%m.%Y') if vacancy.created_at else 'Не указана' }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ vacancy.applications|length }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">У компании пока нет вакансий</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <small class="text-muted">
+                            Компания создана: {{ company.created_at.strftime('%d.%m.%Y') if company.created_at else 'Не указана' }} |
+                            Обновлена: {{ company.updated_at.strftime('%d.%m.%Y') if company.updated_at else 'Не указана' }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('admin.manage_companies') }}" class="btn btn-outline-secondary">
+                        ← Назад к списку компаний
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

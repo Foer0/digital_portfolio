@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item active">Поиск вакансий</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Фильтры -->
+    <div class="col-md-3">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header bg-dark-green text-white">
+                <h6>Фильтры и поиск</h6>
+            </div>
+            <div class="card-body">
+                <form method="GET" id="filter-form">
+                    <div class="mb-3">
+                        <label class="form-label">Поиск</label>
+                        <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="Должность или компания...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Уровень опыта</label>
+                        <select class="form-select" name="experience">
+                            <option value="all">Любой</option>
+                            <option value="junior" {{ 'selected' if experience == 'junior' else '' }}>Junior</option>
+                            <option value="middle" {{ 'selected' if experience == 'middle' else '' }}>Middle</option>
+                            <option value="senior" {{ 'selected' if experience == 'senior' else '' }}>Senior</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Тип занятости</label>
+                        <select class="form-select" name="employment_type">
+                            <option value="all">Любой</option>
+                            <option value="full-time" {{ 'selected' if employment_type == 'full-time' else '' }}>Полная</option>
+                            <option value="part-time" {{ 'selected' if employment_type == 'part-time' else '' }}>Частичная</option>
+                            <option value="remote" {{ 'selected' if employment_type == 'remote' else '' }}>Удалённая</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Зарплата от</label>
+                        <input type="number" class="form-control" name="salary_min" value="{{ salary_min }}" placeholder="руб.">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Сортировка</label>
+                        <select class="form-select" name="sort">
+                            <option value="newest" {{ 'selected' if sort == 'newest' else '' }}>Сначала новые</option>
+                            <option value="salary_high" {{ 'selected' if sort == 'salary_high' else '' }}>Зарплата по убыванию</option>
+                            <option value="salary_low" {{ 'selected' if sort == 'salary_low' else '' }}>Зарплата по возрастанию</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Применить</button>
+                    <a href="{{ url_for('seeker.vacancies') }}" class="btn btn-outline-secondary w-100 mt-2">Сбросить</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Список вакансий -->
+    <div class="col-md-9">
+        <h2 class="mb-4">Доступные вакансии <small class="text-muted">({{ vacancies|length }} найдено)</small></h2>
+
+        {% if vacancies %}
+            {% for vacancy in vacancies %}
+            <div class="card mb-4 hover-scale">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="card-title">{{ vacancy.title }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ vacancy.company.company_name }}</h6>
+                            <p class="card-text">{{ vacancy.description[:200] }}...</p>
+
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <strong>Зарплата:</strong><br>
+                                    {% if vacancy.salary_min and vacancy.salary_max %}
+                                        {{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.
+                                    {% elif vacancy.salary_min %}
+                                        от {{ vacancy.salary_min }} руб.
+                                    {% elif vacancy.salary_max %}
+                                        до {{ vacancy.salary_max }} руб.
+                                    {% else %}
+                                        не указана
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Опыт:</strong><br>
+                                    {{ vacancy.experience_level }}
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Тип занятости:</strong><br>
+                                    {{ vacancy.employment_type }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 text-end">
+                            <button type="button" class="btn btn-primary mb-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#vacancyModal{{ vacancy.id }}">
+                                Подробнее
+                            </button>
+                            <br>
+                            <small class="text-muted">
+                                Опубликовано: {{ vacancy.created_at.strftime('%d.%m.%Y') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal с деталями вакансии -->
+            <div class="modal fade" id="vacancyModal{{ vacancy.id }}" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ vacancy.title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h6>О компании</h6>
+                            <p>{{ vacancy.company.description or 'Информация о компании не указана' }}</p>
+
+                            <h6>Описание вакансии</h6>
+                            <p>{{ vacancy.description }}</p>
+
+                            <h6>Требования</h6>
+                            <p>{{ vacancy.requirements }}</p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Зарплата:</strong><br>
+                                    {% if vacancy.salary_min and vacancy.salary_max %}
+                                        {{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.
+                                    {% elif vacancy.salary_min %}
+                                        от {{ vacancy.salary_min }} руб.
+                                    {% elif vacancy.salary_max %}
+                                        до {{ vacancy.salary_max }} руб.
+                                    {% else %}
+                                        не указана
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Опыт:</strong><br>
+                                    {{ vacancy.experience_level }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Тип занятости:</strong><br>
+                                    {{ vacancy.employment_type }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Локация:</strong><br>
+                                    {{ vacancy.location or 'Не указана' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            {% if current_user.is_authenticated and current_user.role == 'seeker' %}
+                            <button type="button" class="btn btn-primary"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#applyForm{{ vacancy.id }}">
+                                Откликнуться
+                            </button>
+                            {% endif %}
+                        </div>
+
+                        {% if current_user.is_authenticated and current_user.role == 'seeker' %}
+                        <div class="collapse" id="applyForm{{ vacancy.id }}">
+                            <div class="card card-body">
+                                <form method="POST" action="{{ url_for('seeker.apply', vacancy_id=vacancy.id) }}">
+                                    <div class="mb-3">
+                                        <label class="form-label">Сопроводительное письмо</label>
+                                        <textarea class="form-control" name="cover_letter" rows="4"
+                                                  placeholder="Расскажите, почему вы подходите для этой вакансии, какой у вас опыт и почему хотите работать в этой компании..."
+                                                  required></textarea>
+                                        <div class="form-text">
+                                            Напишите краткое сопроводительное письмо. Это повысит ваши шансы на рассмотрение кандидатуры.
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Отправить отклик</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info text-center">
+                <h5>Вакансии не найдены</h5>
+                <p>Попробуйте изменить параметры поиска или фильтрации</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

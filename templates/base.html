@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цифровой портфель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark-green">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url_for('index') }}">Цифровой портфель</a>
+
+                <!-- Кнопка для мобильного меню -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Сквозной поиск -->
+                    <div class="d-flex me-auto ms-3 search-container">
+                        <form class="d-flex search-form" method="GET" action="{{ url_for('seeker.vacancies') }}">
+                            <div class="input-group">
+                                <input type="text" class="form-control search-input" name="search"
+                                       placeholder="Поиск вакансий..." value="{{ request.args.get('search', '') }}">
+                                <button class="btn btn-outline-light" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="navbar-nav ms-auto">
+                        <!-- Ссылка на контакты для всех пользователей -->
+                        <a class="nav-link" href="{{ url_for('contacts') }}">Контакты</a>
+
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.role == 'seeker' %}
+                                <a class="nav-link" href="{{ url_for('seeker.dashboard') }}">Личный кабинет</a>
+                            {% elif current_user.role == 'employer' %}
+                                <a class="nav-link" href="{{ url_for('employer.dashboard') }}">Личный кабинет</a>
+                            {% elif current_user.role == 'admin' %}
+                                <a class="nav-link" href="{{ url_for('admin.admin_panel') }}">Админ-панель</a>
+                            {% endif %}
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">Выйти</a>
+                        {% else %}
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">Войти</a>
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">Регистрация</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Хлебные крошки (скрыты на главной) -->
+        {% if request.path != '/' %}
+        <nav aria-label="breadcrumb" class="breadcrumb-container">
+            <div class="container">
+                <ol class="breadcrumb">
+                    {% block breadcrumbs %}
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Главная</a></li>
+                    {% endblock %}
+                </ol>
+            </div>
+        </nav>
+        {% endif %}
+    </header>
+
+    <main class="container my-4 flex-grow-1">
+        <!-- Flash сообщения -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="alert alert-custom alert-dismissible fade show" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer bg-dark text-light py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Контакты</h5>
+                    <p>Шипуля Игорь Валерьевич</p>
+                    <p>Группа: 22о</p>
+                    <p>Email: foolu6972@gmail.com</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 Цифровой портфель. Все права защищены.</p>
+                    <a href="{{ url_for('contacts') }}" class="text-light">Связаться с нами</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+</body>
+</html>

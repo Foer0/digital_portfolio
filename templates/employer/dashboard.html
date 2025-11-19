@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item active">Кабинет работодателя</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Информация о компании -->
+        <div class="col-md-4">
+            <div class="card floating-element mb-4">
+                <div class="card-header bg-dark-green text-white">
+                    <h5>Моя компания</h5>
+                </div>
+                <div class="card-body">
+                    {% if company %}
+                        <h6>{{ company.company_name }}</h6>
+                        <p><strong>Отрасль:</strong> {{ company.industry or 'Не указана' }}</p>
+                        <p><strong>Email:</strong> {{ company.contact_email or 'Не указан' }}</p>
+                        <p><strong>Телефон:</strong> {{ company.phone or 'Не указан' }}</p>
+                        <a href="{{ url_for('employer.edit_company') }}" class="btn btn-primary btn-sm">
+                            Редактировать
+                        </a>
+                    {% else %}
+                        <p>Информация о компании не заполнена</p>
+                        <a href="{{ url_for('employer.edit_company') }}" class="btn btn-primary">
+                            Добавить информацию
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Статистика -->
+            <div class="card">
+                <div class="card-header bg-dark-green text-white">
+                    <h5>Статистика</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h4>{{ vacancies|length }}</h4>
+                            <small class="text-muted">Вакансий</small>
+                        </div>
+                        <div class="col-6">
+                            <h4>{{ applications|length }}</h4>
+                            <small class="text-muted">Откликов</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вакансии и отклики -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-dark-green text-white d-flex justify-content-between align-items-center">
+                    <h5>Мои вакансии</h5>
+                    <a href="{{ url_for('employer.create_vacancy') }}" class="btn btn-light btn-sm">
+                        + Новая вакансия
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if vacancies %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Должность</th>
+                                        <th>Статус</th>
+                                        <th>Откликов</th>
+                                        <th>Дата</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vacancy in vacancies %}
+                                    <tr>
+                                        <td>{{ vacancy.title }}</td>
+                                        <td>
+                                            <span class="badge {% if vacancy.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ 'Активна' if vacancy.is_active else 'Неактивна' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ vacancy.applications|length }}
+                                        </td>
+                                        <td>{{ vacancy.created_at.strftime('%d.%m.%Y') }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#vacancyModal{{ vacancy.id }}">
+                                                Просмотр
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">У вас пока нет вакансий</p>
+                        <div class="text-center">
+                            <a href="{{ url_for('employer.create_vacancy') }}" class="btn btn-primary">
+                                Создать первую вакансию
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Последние отклики -->
+            <div class="card">
+                <div class="card-header bg-dark-green text-white">
+                    <h5>Последние отклики</h5>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Соискатель</th>
+                                        <th>Вакансия</th>
+                                        <th>Дата</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in applications[:5] %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('employer.view_application', application_id=app.id) }}"
+                                               class="text-decoration-none fw-bold">
+                                                {{ app.seeker.name }}
+                                            </a>
+                                            {% if app.cover_letter %}
+                                            <br><small class="text-muted">Есть сопроводительное письмо</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ app.vacancy.title }}</td>
+                                        <td>{{ app.created_at.strftime('%d.%m.%Y') }}</td>
+                                        <td>
+                                            <span class="badge
+                                                {% if app.status == 'pending' %}bg-warning
+                                                {% elif app.status == 'accepted' %}bg-success
+                                                {% elif app.status == 'rejected' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ app.status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('employer.view_application', application_id=app.id) }}"
+                                                   class="btn btn-outline-primary"
+                                                   title="Просмотреть заявку">
+                                                    <i class="bi bi-envelope-open"></i>
+                                                </a>
+                                                {% if app.portfolio %}
+                                                <a href="{{ url_for('employer.view_portfolio', portfolio_id=app.portfolio.id) }}"
+                                                   class="btn btn-outline-info"
+                                                   title="Просмотреть портфолио">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if applications|length > 5 %}
+                        <div class="text-center">
+                            <small class="text-muted">Показано 5 из {{ applications|length }} откликов</small>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-center">Пока нет откликов на ваши вакансии</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальные окна для вакансий работодателя -->
+{% for vacancy in vacancies %}
+<div class="modal fade" id="vacancyModal{{ vacancy.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ vacancy.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Описание</h6>
+                <p>{{ vacancy.description }}</p>
+
+                <h6>Требования</h6>
+                <p>{{ vacancy.requirements }}</p>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Зарплата:</strong><br>
+                        {% if vacancy.salary_min and vacancy.salary_max %}
+                            {{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.
+                        {% elif vacancy.salary_min %}
+                            от {{ vacancy.salary_min }} руб.
+                        {% elif vacancy.salary_max %}
+                            до {{ vacancy.salary_max }} руб.
+                        {% else %}
+                            не указана
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Опыт:</strong><br>
+                        {{ vacancy.experience_level }}
+                    </div>
+                </div>
+
+                {% if vacancy.applications %}
+                <h6>Отклики ({{ vacancy.applications|length }})</h6>
+                <div class="applications-list">
+                    {% for app in vacancy.applications %}
+                    <div class="card mb-2">
+                        <div class="card-body py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{{ url_for('employer.view_application', application_id=app.id) }}"
+                                       class="text-decoration-none fw-bold">
+                                        {{ app.seeker.name }}
+                                    </a>
+                                    <small class="text-muted d-block">{{ app.portfolio.profession if app.portfolio else 'Профессия не указана' }}</small>
+                                    {% if app.cover_letter %}
+                                    <small class="text-success">Есть сопроводительное письмо</small>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a href="{{ url_for('employer.view_application', application_id=app.id) }}"
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Просмотреть заявку">
+                                        <i class="bi bi-envelope-open"></i>
+                                    </a>
+                                    {% if app.portfolio %}
+                                    <a href="{{ url_for('employer.view_portfolio', portfolio_id=app.portfolio.id) }}"
+                                       class="btn btn-sm btn-outline-info"
+                                       title="Просмотреть портфолио">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% endif %}
+                                    <span class="badge
+                                        {% if app.status == 'pending' %}bg-warning
+                                        {% elif app.status == 'accepted' %}bg-success
+                                        {% elif app.status == 'rejected' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ app.status }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

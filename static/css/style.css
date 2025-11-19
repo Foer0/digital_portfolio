@@ -1,0 +1,1241 @@
+:root {
+    --dark-green: #2d4a3e;
+    --light-green: #5a7d5e;
+    --gray: #8a9b8c;
+    --beige: #d9c7b8;
+    --black: #1a1a1a;
+    --dark-gray: #2d2d2d;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: var(--black);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+.min-vh-100 {
+    min-height: 100vh !important;
+}
+
+/* Навигация */
+.bg-dark-green {
+    background-color: var(--dark-green) !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+/* Форма поиска */
+.search-form {
+    min-width: 300px;
+}
+
+.search-input {
+    border: 1px solid var(--gray);
+    border-right: none;
+}
+
+.search-input:focus {
+    border-color: var(--light-green);
+    box-shadow: 0 0 0 0.2rem rgba(90, 125, 94, 0.25);
+}
+
+.btn-outline-light:hover {
+    background-color: var(--beige);
+    border-color: var(--beige);
+    color: var(--dark-green);
+}
+
+/* Хлебные крошки */
+.breadcrumb-container {
+    background-color: var(--beige);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+    background: transparent;
+}
+
+.breadcrumb-item a {
+    color: var(--dark-green);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--light-green);
+}
+
+.breadcrumb-item.active {
+    color: var(--gray);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--gray);
+}
+
+/* Flash сообщения */
+.flash-messages {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1050;
+    min-width: 300px;
+}
+
+.alert-custom {
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideInRight 0.5s ease-out;
+}
+
+.alert-custom .btn-close-custom {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+.alert-custom .btn-close-custom:hover {
+    opacity: 1;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Кнопки */
+.btn-primary {
+    background-color: var(--light-green);
+    border-color: var(--dark-green);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-outline-primary {
+    color: var(--light-green);
+    border-color: var(--light-green);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--light-green);
+    border-color: var(--light-green);
+    color: white;
+}
+
+/* Карточки */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    font-weight: 600;
+}
+
+/* Анимации */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.floating-element {
+    animation: float 3s ease-in-out infinite;
+}
+
+.hover-scale {
+    transition: all 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+/* Анимация фона главной страницы */
+/* Эффект переливающейся воды для главной страницы */
+.hero-section {
+    position: relative;
+    background: linear-gradient(-45deg,
+        var(--dark-green) 0%,
+        var(--light-green) 25%,
+        var(--gray) 50%,
+        var(--beige) 75%,
+        var(--dark-green) 100%);
+    background-size: 400% 400%;
+    animation: gradientFlow 18s ease-in-out infinite;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Создаем эффект перелива через псевдоэлементы */
+.hero-section::before,
+.hero-section::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: inherit;
+    z-index: -1;
+    opacity: 0;
+    filter: blur(15px);
+    transition: opacity 0.5s ease;
+}
+
+.hero-section::before {
+    top: 100%;
+    animation: waterDripDown 12s ease-in-out infinite;
+    background: linear-gradient(to bottom,
+        rgba(45, 74, 62, 0.8) 0%,
+        rgba(90, 125, 94, 0.6) 30%,
+        rgba(138, 155, 140, 0.4) 60%,
+        rgba(217, 199, 184, 0.2) 90%,
+        transparent 100%);
+}
+
+.hero-section::after {
+    bottom: 100%;
+    animation: waterDripUp 12s ease-in-out infinite 6s;
+    background: linear-gradient(to top,
+        rgba(45, 74, 62, 0.8) 0%,
+        rgba(90, 125, 94, 0.6) 30%,
+        rgba(138, 155, 140, 0.4) 60%,
+        rgba(217, 199, 184, 0.2) 90%,
+        transparent 100%);
+}
+
+/* Анимация градиента */
+@keyframes gradientFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+        transform: scale(1);
+    }
+    25% {
+        background-position: 50% 75%;
+        transform: scale(1.005);
+    }
+    50% {
+        background-position: 100% 50%;
+        transform: scale(1);
+    }
+    75% {
+        background-position: 50% 25%;
+        transform: scale(1.005);
+    }
+}
+
+/* Анимация стекания воды вниз */
+@keyframes waterDripDown {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(-20px) scaleY(0.3);
+    }
+    15% {
+        opacity: 0.3;
+        transform: translateY(0) scaleY(0.5);
+    }
+    30% {
+        opacity: 0.6;
+        transform: translateY(40px) scaleY(0.8);
+    }
+    45% {
+        opacity: 0.8;
+        transform: translateY(80px) scaleY(1);
+    }
+    60% {
+        opacity: 0.6;
+        transform: translateY(120px) scaleY(0.8);
+    }
+    75% {
+        opacity: 0.3;
+        transform: translateY(160px) scaleY(0.5);
+    }
+    90% {
+        opacity: 0.1;
+        transform: translateY(200px) scaleY(0.3);
+    }
+}
+
+/* Анимация подъема воды вверх */
+@keyframes waterDripUp {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(20px) scaleY(0.3);
+    }
+    15% {
+        opacity: 0.3;
+        transform: translateY(0) scaleY(0.5);
+    }
+    30% {
+        opacity: 0.6;
+        transform: translateY(-40px) scaleY(0.8);
+    }
+    45% {
+        opacity: 0.8;
+        transform: translateY(-80px) scaleY(1);
+    }
+    60% {
+        opacity: 0.6;
+        transform: translateY(-120px) scaleY(0.8);
+    }
+    75% {
+        opacity: 0.3;
+        transform: translateY(-160px) scaleY(0.5);
+    }
+    90% {
+        opacity: 0.1;
+        transform: translateY(-200px) scaleY(0.3);
+    }
+}
+
+/* Добавляем пузырьки для большего эффекта воды */
+.water-bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: bubbleFloat 8s ease-in-out infinite;
+}
+
+.bubble:nth-child(1) {
+    width: 8px;
+    height: 8px;
+    left: 10%;
+    animation-delay: 0s;
+    animation-duration: 10s;
+}
+
+.bubble:nth-child(2) {
+    width: 12px;
+    height: 12px;
+    left: 25%;
+    animation-delay: 2s;
+    animation-duration: 12s;
+}
+
+.bubble:nth-child(3) {
+    width: 6px;
+    height: 6px;
+    left: 50%;
+    animation-delay: 4s;
+    animation-duration: 8s;
+}
+
+.bubble:nth-child(4) {
+    width: 10px;
+    height: 10px;
+    left: 75%;
+    animation-delay: 1s;
+    animation-duration: 11s;
+}
+
+.bubble:nth-child(5) {
+    width: 14px;
+    height: 14px;
+    left: 90%;
+    animation-delay: 3s;
+    animation-duration: 14s;
+}
+
+@keyframes bubbleFloat {
+    0% {
+        transform: translateY(100%) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(0) scale(1);
+        opacity: 0.6;
+    }
+    80% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(-100%) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Улучшаем контрастность текста для читаемости */
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Анимация для кнопок в герое */
+.hero-section .btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.hero-section .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent);
+    transition: left 0.5s ease;
+}
+
+.hero-section .btn:hover::before {
+    left: 100%;
+}
+
+/* Гарантируем, что следующий контент будет виден */
+section:not(.hero-section) {
+    position: relative;
+    z-index: 2;
+}
+
+/* Оптимизация производительности */
+.hero-section,
+.hero-section::before,
+.hero-section::after,
+.bubble {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .hero-section::before,
+    .hero-section::after {
+        height: 60px;
+    }
+
+    @keyframes waterDripDown {
+        0%, 100% {
+            opacity: 0;
+            transform: translateY(-10px) scaleY(0.3);
+        }
+        15% {
+            opacity: 0.3;
+            transform: translateY(0) scaleY(0.5);
+        }
+        30% {
+            opacity: 0.6;
+            transform: translateY(20px) scaleY(0.8);
+        }
+        45% {
+            opacity: 0.8;
+            transform: translateY(40px) scaleY(1);
+        }
+        60% {
+            opacity: 0.6;
+            transform: translateY(60px) scaleY(0.8);
+        }
+        75% {
+            opacity: 0.3;
+            transform: translateY(80px) scaleY(0.5);
+        }
+        90% {
+            opacity: 0.1;
+            transform: translateY(100px) scaleY(0.3);
+        }
+    }
+
+    @keyframes waterDripUp {
+        0%, 100% {
+            opacity: 0;
+            transform: translateY(10px) scaleY(0.3);
+        }
+        15% {
+            opacity: 0.3;
+            transform: translateY(0) scaleY(0.5);
+        }
+        30% {
+            opacity: 0.6;
+            transform: translateY(-20px) scaleY(0.8);
+        }
+        45% {
+            opacity: 0.8;
+            transform: translateY(-40px) scaleY(1);
+        }
+        60% {
+            opacity: 0.6;
+            transform: translateY(-60px) scaleY(0.8);
+        }
+        75% {
+            opacity: 0.3;
+            transform: translateY(-80px) scaleY(0.5);
+        }
+        90% {
+            opacity: 0.1;
+            transform: translateY(-100px) scaleY(0.3);
+        }
+    }
+
+    .bubble {
+        display: none; /* Скрываем пузырьки на мобильных для производительности */
+    }
+}
+
+/* Футер */
+.footer {
+    background-color: var(--dark-gray) !important;
+    margin-top: auto;
+}
+
+/* Бейджи */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+}
+
+.bg-success {
+    background-color: var(--light-green) !important;
+}
+
+/* Таблицы */
+.table-hover tbody tr:hover {
+    background-color: rgba(90, 125, 94, 0.1);
+}
+
+/* Формы */
+.form-control:focus {
+    border-color: var(--light-green);
+    box-shadow: 0 0 0 0.2rem rgba(90, 125, 94, 0.25);
+}
+
+.form-select:focus {
+    border-color: var(--light-green);
+    box-shadow: 0 0 0 0.2rem rgba(90, 125, 94, 0.25);
+}
+
+/* Модальные окна */
+.modal-content {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    background-color: var(--dark-green);
+    color: white;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .search-form {
+        min-width: 200px;
+        margin: 10px 0;
+    }
+
+    .flash-messages {
+        position: relative;
+        top: auto;
+        right: auto;
+        min-width: auto;
+        margin-bottom: 1rem;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+}
+
+/* Дополнительные стили для просмотра портфолио */
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.bg-light-green {
+    background-color: var(--light-green) !important;
+}
+
+.education-content,
+.projects-content,
+.contact-content {
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.border-bottom {
+    border-color: var(--light-green) !important;
+}
+
+/* Стили для статусов заявок */
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.badge.bg-success {
+    background-color: var(--light-green) !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Анимации для кнопок просмотра */
+.btn-outline-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Стили для сопроводительного письма */
+.cover-letter-content {
+    line-height: 1.6;
+    white-space: pre-line;
+    border-left: 4px solid var(--light-green);
+    padding-left: 1rem;
+}
+
+/* Стили для кнопок действий */
+.btn-group .btn {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Улучшаем отображение таблиц */
+.table-responsive {
+    border-radius: 8px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(90, 125, 94, 0.05);
+}
+
+/* Исправление читаемости текста на анимированных кнопках */
+.btn:not(.navbar .btn):not(.search-form .btn):not(.btn-close) {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+}
+
+/* Улучшение контрастности для светлых кнопок */
+.btn-light:not(.navbar .btn):not(.search-form .btn) {
+    color: var(--dark-green) !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.btn-outline-light:not(.navbar .btn):not(.search-form .btn) {
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Специальные стили для кнопок в hero-section */
+.hero-section .btn {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+.hero-section .btn-light {
+    color: var(--dark-green) !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.hero-section .btn-outline-light {
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Улучшение читаемости для outline кнопок */
+.btn-outline-primary:not(.navbar .btn):not(.search-form .btn),
+.btn-outline-secondary:not(.navbar .btn):not(.search-form .btn),
+.btn-outline-success:not(.navbar .btn):not(.search-form .btn),
+.btn-outline-danger:not(.navbar .btn):not(.search-form .btn),
+.btn-outline-warning:not(.navbar .btn):not(.search-form .btn),
+.btn-outline-info:not(.navbar .btn):not(.search-form .btn),
+.btn-outline-dark:not(.navbar .btn):not(.search-form .btn) {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+/* Уменьшаем интенсивность градиента для лучшей читаемости */
+.btn-primary:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-success:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-danger:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-warning:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-info:not(.navbar .btn):not(.search-form .btn)::after {
+    opacity: 0.7;
+}
+
+.btn-outline-primary:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-outline-secondary:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-outline-success:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-outline-danger:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-outline-warning:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-outline-info:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-outline-light:not(.navbar .btn):not(.search-form .btn)::after,
+.btn-outline-dark:not(.navbar .btn):not(.search-form .btn)::after {
+    opacity: 0.4;
+}
+
+/* Дополнительный контраст для текста */
+.btn:not(.navbar .btn):not(.search-form .btn):not(.btn-close) span,
+.btn:not(.navbar .btn):not(.search-form .btn):not(.btn-close) i {
+    position: relative;
+    z-index: 2;
+}
+
+/* Улучшение для кнопок в карточках */
+.card .btn:not(.navbar .btn):not(.search-form .btn) {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Специальные стили для кнопок призыва к действию */
+.btn-cta {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Адаптивность для мобильных - уменьшаем интенсивность анимации */
+@media (max-width: 768px) {
+    .btn:not(.navbar .btn):not(.search-form .btn):not(.btn-close)::after {
+        opacity: 0.4;
+    }
+
+    .btn-primary:not(.navbar .btn):not(.search-form .btn)::after,
+    .btn-success:not(.navbar .btn):not(.search-form .btn)::after {
+        opacity: 0.5;
+    }
+}
+
+/* Добавляем в конец файла */
+
+/* Градиентные кнопки для админ-панели как header */
+.btn-admin-pulse {
+    position: relative;
+    background: linear-gradient(-45deg,
+        #3498db,  /* синий */
+        #2ecc71,  /* зеленый */
+        #9b59b6,  /* фиолетовый */
+        #e74c3c,  /* красный */
+        #f39c12,  /* оранжевый */
+        #3498db   /* снова синий для завершения цикла */
+    );
+    background-size: 400% 400%;
+    animation: adminGradientFlow 8s ease infinite;
+    border: none;
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-admin-pulse::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.btn-admin-pulse:hover::before {
+    opacity: 1;
+}
+
+.btn-admin-pulse:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes adminGradientFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 25%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 75%;
+    }
+}
+
+/* Улучшение читаемости текста */
+.btn-admin-pulse {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.btn-admin-pulse i {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+    margin-bottom: 8px;
+    display: block;
+    font-size: 1.5rem;
+}
+
+/* Анимация для кнопок действий в таблицах */
+.btn-admin-action {
+    position: relative;
+    background: var(--dark-green);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.btn-admin-action:hover {
+    background: var(--light-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Альтернативный вариант градиента - более приглушенные цвета как в header */
+.btn-admin-pulse.alternative {
+    background: linear-gradient(-45deg,
+        #2c3e50,  /* темно-синий */
+        #34495e,  /* мокрый асфальт */
+        #7f8c8d,  /* серый */
+        #95a5a6,  /* светлый серый */
+        #bdc3c7,  /* серебро */
+        #2c3e50   /* снова темно-синий */
+    );
+    background-size: 400% 400%;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .btn-admin-pulse {
+        animation-duration: 10s;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+
+    .btn-admin-pulse i {
+        font-size: 1.3rem;
+        margin-bottom: 5px;
+    }
+
+    .btn-admin-pulse:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+}
+
+/* Убедимся, что иконки видны */
+.bi-buildings::before {
+    content: "\f1ad"; /* Код для иконки здания */
+}
+
+/* Улучшение контрастности для всех кнопок админ-панели */
+.admin-actions .btn,
+.card .btn-admin-pulse {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Эффект пульсации для привлечения внимания */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(52, 152, 219, 0.8), 0 0 30px rgba(52, 152, 219, 0.6);
+    }
+}
+
+.btn-admin-pulse:focus {
+    animation: pulse-glow 1.5s ease-in-out;
+}
+
+/* Добавляем в конец файла */
+
+/* Градиентные кнопки в цветовой палитре сайта */
+.btn-gradient {
+    position: relative;
+    background: linear-gradient(-45deg,
+        var(--dark-green),   /* темно-зеленый */
+        var(--light-green),  /* светло-зеленый */
+        var(--gray),         /* серый */
+        var(--beige),        /* бежевый */
+        var(--dark-green)    /* снова темно-зеленый для завершения цикла */
+    );
+    background-size: 400% 400%;
+    animation: siteGradientFlow 12s ease infinite;
+    border: none;
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.btn-gradient:hover::before {
+    opacity: 1;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+@keyframes siteGradientFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 25%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 75%;
+    }
+}
+
+/* Специальные стили для кнопок админ-панели */
+.btn-admin-pulse {
+    position: relative;
+    background: linear-gradient(-45deg,
+        var(--dark-green),   /* темно-зеленый */
+        var(--light-green),  /* светло-зеленый */
+        #6b8e6d,            /* промежуточный зеленый */
+        var(--gray),         /* серый */
+        var(--beige),        /* бежевый */
+        var(--dark-green)    /* снова темно-зеленый */
+    );
+    background-size: 400% 400%;
+    animation: adminGradientFlow 10s ease infinite;
+    border: none;
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-admin-pulse::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.btn-admin-pulse:hover::before {
+    opacity: 1;
+}
+
+.btn-admin-pulse:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes adminGradientFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 25%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 75%;
+    }
+}
+
+/* Основные кнопки сайта - переопределяем стандартные */
+.btn-primary {
+    background: linear-gradient(-45deg,
+        var(--dark-green),
+        var(--light-green),
+        var(--dark-green)
+    );
+    background-size: 400% 400%;
+    animation: primaryGradientFlow 8s ease infinite;
+    border: none;
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(-45deg,
+        var(--light-green),
+        var(--dark-green),
+        var(--light-green)
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
+@keyframes primaryGradientFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Кнопки успеха */
+.btn-success {
+    background: linear-gradient(-45deg,
+        #2d4a3e,
+        #5a7d5e,
+        #4a6b4e,
+        #2d4a3e
+    );
+    background-size: 400% 400%;
+    animation: successGradientFlow 8s ease infinite;
+    border: none;
+    color: white;
+    font-weight: 600;
+}
+
+@keyframes successGradientFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Кнопки информации */
+.btn-info {
+    background: linear-gradient(-45deg,
+        #3a5f5f,
+        #4a7d7d,
+        #3a5f5f
+    );
+    background-size: 400% 400%;
+    animation: infoGradientFlow 8s ease infinite;
+    border: none;
+    color: white;
+    font-weight: 600;
+}
+
+@keyframes infoGradientFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Улучшение читаемости текста для всех градиентных кнопок */
+.btn-gradient,
+.btn-admin-pulse,
+.btn-primary,
+.btn-success,
+.btn-info {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+.btn-gradient i,
+.btn-admin-pulse i {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+    margin-bottom: 8px;
+    display: block;
+    font-size: 1.5rem;
+}
+
+/* Анимация для кнопок действий в таблицах */
+.btn-admin-action {
+    position: relative;
+    background: var(--dark-green);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.btn-admin-action:hover {
+    background: var(--light-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Убедимся, что иконки видны */
+.bi-buildings::before {
+    content: "\f1ad";
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .btn-gradient,
+    .btn-admin-pulse {
+        animation-duration: 15s;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+
+    .btn-gradient i,
+    .btn-admin-pulse i {
+        font-size: 1.3rem;
+        margin-bottom: 5px;
+    }
+
+    .btn-gradient:hover,
+    .btn-admin-pulse:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .btn-primary,
+    .btn-success,
+    .btn-info {
+        animation-duration: 12s;
+    }
+}
+
+/* Эффект пульсации для привлечения внимания */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(45, 74, 62, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(45, 74, 62, 0.8), 0 0 25px rgba(90, 125, 94, 0.6);
+    }
+}
+
+.btn-gradient:focus,
+.btn-admin-pulse:focus {
+    animation: pulse-glow 1.5s ease-in-out;
+}
+
+/* Специальные стили для кнопок в hero-section */
+.hero-section .btn {
+    background: linear-gradient(-45deg,
+        rgba(45, 74, 62, 0.9),
+        rgba(90, 125, 94, 0.8),
+        rgba(45, 74, 62, 0.9)
+    );
+    background-size: 400% 400%;
+    animation: heroButtonFlow 10s ease infinite;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease;
+}
+
+.hero-section .btn-light {
+    background: linear-gradient(-45deg,
+        rgba(255, 255, 255, 0.9),
+        rgba(255, 255, 255, 0.8),
+        rgba(255, 255, 255, 0.9)
+    );
+    color: var(--dark-green);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.hero-section .btn-outline-light {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    color: white;
+}
+
+.hero-section .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes heroButtonFlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 25%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 75%;
+    }
+}

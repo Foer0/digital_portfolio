@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item active">Личный кабинет соискателя</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card floating-element mb-4">
+                <div class="card-header bg-dark-green text-white">
+                    <h5>Моё портфолио</h5>
+                </div>
+                <div class="card-body">
+                    {% if portfolio %}
+                        <h6>{{ portfolio.title }}</h6>
+                        <p><strong>Профессия:</strong> {{ portfolio.profession }}</p>
+                        <p><strong>Опыт:</strong> {{ portfolio.experience_years }} лет</p>
+                        <p><strong>Навыки:</strong> {{ portfolio.skills }}</p>
+                        <a href="{{ url_for('seeker.edit_portfolio') }}" class="btn btn-primary btn-sm">Редактировать</a>
+                    {% else %}
+                        <p>Портфолио ещё не создано</p>
+                        <a href="{{ url_for('seeker.edit_portfolio') }}" class="btn btn-primary">Создать портфолио</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark-green text-white d-flex justify-content-between align-items-center">
+                    <h5>Мои отклики</h5>
+                    <a href="{{ url_for('seeker.vacancies') }}" class="btn btn-light btn-sm">Найти вакансии</a>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Вакансия</th>
+                                        <th>Компания</th>
+                                        <th>Дата отклика</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in applications %}
+                                    <tr>
+                                        <td>{{ app.vacancy.title }}</td>
+                                        <td>{{ app.vacancy.company.company_name }}</td>
+                                        <td>{{ app.created_at.strftime('%d.%m.%Y') }}</td>
+                                        <td>
+                                            <span class="badge
+                                                {% if app.status == 'pending' %}bg-warning
+                                                {% elif app.status == 'accepted' %}bg-success
+                                                {% elif app.status == 'rejected' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ app.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">У вас пока нет откликов</p>
+                        <div class="text-center">
+                            <a href="{{ url_for('seeker.vacancies') }}" class="btn btn-primary">Найти вакансии</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

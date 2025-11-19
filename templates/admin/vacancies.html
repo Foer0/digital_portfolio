@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.admin_panel') }}">Админ-панель</a></li>
+<li class="breadcrumb-item active">Управление вакансиями</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Управление вакансиями</h1>
+        <span class="badge bg-primary">Всего: {{ vacancies|length }}</span>
+    </div>
+
+    <div class="card hover-scale">
+        <div class="card-header bg-dark-green text-white">
+            <h6 class="mb-0">Список вакансий</h6>
+        </div>
+        <div class="card-body">
+            {% if vacancies %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Должность</th>
+                            <th>Компания</th>
+                            <th>Работодатель</th>
+                            <th>Статус</th>
+                            <th>Модерация</th>
+                            <th>Дата создания</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vacancy in vacancies %}
+                        <tr>
+                            <td>{{ vacancy.id }}</td>
+                            <td>{{ vacancy.title }}</td>
+                            <td>{{ vacancy.company.company_name }}</td>
+                            <td>{{ vacancy.employer.name }}</td>
+                            <td>
+                                <span class="badge {% if vacancy.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'Активна' if vacancy.is_active else 'Неактивна' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if vacancy.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ 'Одобрена' if vacancy.is_approved else 'На модерации' }}
+                                </span>
+                            </td>
+                            <td>{{ vacancy.created_at.strftime('%d.%m.%Y') }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <!-- Кнопки модерации -->
+                                    {% if not vacancy.is_approved %}
+                                    <form method="POST" action="{{ url_for('admin.approve_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-success"
+                                                title="Одобрить вакансию">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <form method="POST" action="{{ url_for('admin.reject_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-warning"
+                                                title="Отклонить вакансию">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+
+                                    <!-- Активация/деактивация -->
+                                    <form method="POST" action="{{ url_for('admin.toggle_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                        <button type="submit" class="btn {% if vacancy.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                            {% if vacancy.is_active %}Деактивировать{% else %}Активировать{% endif %}
+                                        </button>
+                                    </form>
+
+                                    <!-- Удаление -->
+                                    <form method="POST" action="{{ url_for('admin.delete_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger"
+                                                onclick="return confirm('Вы уверены, что хотите удалить вакансию?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p class="text-muted">Нет созданных вакансий</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

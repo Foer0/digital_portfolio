@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.admin_panel') }}">Админ-панель</a></li>
+<li class="breadcrumb-item active">Управление откликами</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Управление откликами</h1>
+        <span class="badge bg-primary">Всего: {{ applications|length }}</span>
+    </div>
+
+    <div class="card hover-scale">
+        <div class="card-header bg-dark-green text-white">
+            <h6 class="mb-0">Список откликов</h6>
+        </div>
+        <div class="card-body">
+            {% if applications %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Соискатель</th>
+                            <th>Вакансия</th>
+                            <th>Компания</th>
+                            <th>Статус</th>
+                            <th>Дата отклика</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>{{ application.id }}</td>
+                            <td>{{ application.seeker.name }}</td>
+                            <td>{{ application.vacancy.title }}</td>
+                            <td>{{ application.vacancy.company.company_name }}</td>
+                            <td>
+                                <span class="badge
+                                    {% if application.status == 'pending' %}bg-warning
+                                    {% elif application.status == 'accepted' %}bg-success
+                                    {% elif application.status == 'rejected' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ application.status }}
+                                </span>
+                            </td>
+                            <td>{{ application.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p class="text-muted">Нет откликов на вакансии</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

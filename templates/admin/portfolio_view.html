@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.admin_panel') }}">Админ-панель</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('admin.manage_portfolios') }}">Портфолио</a></li>
+<li class="breadcrumb-item active">Просмотр портфолио</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Портфолио пользователя</h4>
+                    <div>
+                        {% if not portfolio.is_public %}
+                        <span class="badge bg-warning me-2">Приватное</span>
+                        {% endif %}
+                        <span class="badge bg-info">Просмотр администратором</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Информация о пользователе -->
+                    <div class="row mb-4 p-3 bg-light rounded">
+                        <div class="col-md-6">
+                            <h5>Информация о пользователе</h5>
+                            {% if portfolio.user %}
+                                <p><strong>Имя:</strong> {{ portfolio.user.name }}</p>
+                                <p><strong>Email:</strong> {{ portfolio.user.email }}</p>
+                                <p><strong>Роль:</strong> {{ portfolio.user.role }}</p>
+                                <p><strong>Зарегистрирован:</strong>
+                                    {% if portfolio.user.created_at %}
+                                        {{ portfolio.user.created_at.strftime('%d.%m.%Y') }}
+                                    {% else %}
+                                        <span class="text-muted">Не указано</span>
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                <p class="text-muted">Пользователь удален</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="floating-element">
+                                <i class="bi bi-person-badge" style="font-size: 4rem; color: var(--light-green);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Основная информация -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h2>{{ portfolio.title }}</h2>
+
+                            {% if portfolio.profession %}
+                            <div class="mb-3">
+                                <strong>Профессия:</strong> {{ portfolio.profession }}
+                            </div>
+                            {% endif %}
+
+                            {% if portfolio.experience_years %}
+                            <div class="mb-3">
+                                <strong>Опыт работы:</strong> {{ portfolio.experience_years }} лет
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- О себе -->
+                    {% if portfolio.bio %}
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">О себе</h5>
+                        <p class="mb-0">{{ portfolio.bio }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Навыки -->
+                    {% if portfolio.skills %}
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Навыки</h5>
+                        <div class="skills-container">
+                            {% for skill in portfolio.skills.split(',') %}
+                            <span class="badge bg-light-green text-dark me-2 mb-2 p-2">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Образование -->
+                    {% if portfolio.education %}
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Образование</h5>
+                        <div class="education-content">
+                            {{ portfolio.education|replace('\n', '<br>')|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Проекты и достижения -->
+                    {% if portfolio.projects %}
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Проекты и достижения</h5>
+                        <div class="projects-content">
+                            {{ portfolio.projects|replace('\n', '<br>')|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Контактная информация -->
+                    {% if portfolio.contact_info %}
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Контактная информация</h5>
+                        <div class="contact-content">
+                            {{ portfolio.contact_info|replace('\n', '<br>')|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4 pt-3 border-top">
+                        <small class="text-muted">
+                            Портфолио создано:
+                            {% if portfolio.created_at %}
+                                {{ portfolio.created_at.strftime('%d.%m.%Y') }}
+                            {% else %}
+                                <span class="text-muted">Не указано</span>
+                            {% endif %}
+                            {% if portfolio.updated_at %}
+                            | Обновлено: {{ portfolio.updated_at.strftime('%d.%m.%Y') }}
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('admin.manage_portfolios') }}" class="btn btn-outline-secondary">
+                        ← Назад к списку портфолио
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

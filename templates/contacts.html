@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item active">Контакты</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h4 class="mb-0">Контакты</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Разработчик</h5>
+                            <div class="floating-element" style="animation-delay: 0.5s;">
+                                <p><strong>ФИО:</strong> Шипуля Игорь Валерьевич</p>
+                                <p><strong>Группа:</strong> 22о</p>
+                                <p><strong>Email:</strong> foolu6972@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Техническая поддержка</h5>
+                            <div class="floating-element" style="animation-delay: 1s;">
+                                <p><strong>Email:</strong> foolu6972@gmail.com</p>
+                                <p><strong>Телефон:</strong> Пусто</p>
+                                <p><strong>Время работы:</strong> Пн-Пт, 9:00-18:00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h5 class="mb-3">Форма обратной связи</h5>
+                    <form id="contactForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ваше имя</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Тема</label>
+                            <input type="text" class="form-control" name="subject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Сообщение</label>
+                            <textarea class="form-control" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary hover-scale">
+                            Отправить сообщение
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Сообщение отправлено! Мы ответим вам в ближайшее время.');
+    this.reset();
+});
+</script>
+{% endblock %}

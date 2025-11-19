@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('employer.dashboard') }}">Кабинет работодателя</a></li>
+<li class="breadcrumb-item active">Просмотр отклика</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h4 class="mb-0">Отклик на вакансию</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Информация о вакансии -->
+                    <div class="row mb-4 p-3 bg-light rounded">
+                        <div class="col-md-8">
+                            <h5>Вакансия: {{ application.vacancy.title }}</h5>
+                            <p class="mb-1"><strong>Компания:</strong> {{ application.vacancy.company.company_name }}</p>
+                            <p class="mb-0"><strong>Дата отклика:</strong> {{ application.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge
+                                {% if application.status == 'pending' %}bg-warning
+                                {% elif application.status == 'accepted' %}bg-success
+                                {% elif application.status == 'rejected' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ application.status }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Информация о соискателе -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Соискатель</h5>
+                            <p><strong>Имя:</strong> {{ application.seeker.name }}</p>
+                            <p><strong>Email:</strong> {{ application.seeker.email }}</p>
+                            {% if application.portfolio %}
+                            <p>
+                                <a href="{{ url_for('employer.view_portfolio', portfolio_id=application.portfolio.id) }}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Просмотреть портфолио
+                                </a>
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="floating-element">
+                                <i class="bi bi-person-circle" style="font-size: 4rem; color: var(--light-green);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Сопроводительное письмо -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Сопроводительное письмо</h5>
+                        {% if application.cover_letter %}
+                        <div class="cover-letter-content p-3 bg-light rounded">
+                            {{ application.cover_letter|replace('\n', '<br>')|safe }}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">Соискатель не написал сопроводительное письмо</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Действия -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Действия</h5>
+                        <div class="btn-group">
+                            <form method="POST" action="{{ url_for('employer.update_application_status', application_id=application.id) }}" class="d-inline">
+                                <input type="hidden" name="status" value="reviewed">
+                                <button type="submit" class="btn btn-outline-info">Отметить как просмотренное</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('employer.update_application_status', application_id=application.id) }}" class="d-inline">
+                                <input type="hidden" name="status" value="accepted">
+                                <button type="submit" class="btn btn-outline-success">Принять</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('employer.update_application_status', application_id=application.id) }}" class="d-inline">
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-outline-danger">Отклонить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('employer.dashboard') }}" class="btn btn-outline-secondary">
+                        ← Назад к кабинету
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

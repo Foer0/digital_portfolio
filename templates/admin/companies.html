@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.admin_panel') }}">Админ-панель</a></li>
+<li class="breadcrumb-item active">Управление компаниями</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Компании работодателей</h1>
+        <span class="badge bg-primary">Всего: {{ companies|length }}</span>
+    </div>
+
+    <div class="card hover-scale">
+        <div class="card-header bg-dark-green text-white">
+            <h6 class="mb-0">Список компаний</h6>
+        </div>
+        <div class="card-body">
+            {% if companies %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название компании</th>
+                            <th>Владелец</th>
+                            <th>Отрасль</th>
+                            <th>Email</th>
+                            <th>Вакансий</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in companies %}
+                        <tr>
+                            <td>{{ company.id }}</td>
+                            <td>{{ company.company_name }}</td>
+                            <td>{{ company.user.name }}</td>
+                            <td>{{ company.industry or 'Не указана' }}</td>
+                            <td>{{ company.contact_email or company.user.email }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ company.vacancies|length }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin.view_company', company_id=company.id) }}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Просмотреть
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p class="text-muted">Нет зарегистрированных компаний</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('employer.dashboard') }}">Кабинет работодателя</a></li>
+<li class="breadcrumb-item active">Создание вакансии</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h4 class="mb-0">Создание новой вакансии</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Название должности *</label>
+                                <input type="text" class="form-control" name="title" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Тип занятости *</label>
+                                <select class="form-select" name="employment_type" required>
+                                    <option value="full-time">Полная занятость</option>
+                                    <option value="part-time">Частичная занятость</option>
+                                    <option value="remote">Удалённая работа</option>
+                                    <option value="project">Проектная работа</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Уровень опыта *</label>
+                                <select class="form-select" name="experience_level" required>
+                                    <option value="junior">Junior (0-1 год)</option>
+                                    <option value="middle">Middle (1-3 года)</option>
+                                    <option value="senior">Senior (3+ года)</option>
+                                    <option value="lead">Lead (5+ лет)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Локация</label>
+                                <input type="text" class="form-control" name="location" placeholder="Город или удалённо">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Зарплата от (руб.)</label>
+                                <input type="number" class="form-control" name="salary_min" placeholder="50000">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Зарплата до (руб.)</label>
+                                <input type="number" class="form-control" name="salary_max" placeholder="150000">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Описание вакансии *</label>
+                            <textarea class="form-control" name="description" rows="5"
+                                      placeholder="Опишите обязанности, задачи и особенности работы..." required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Требования *</label>
+                            <textarea class="form-control" name="requirements" rows="5"
+                                      placeholder="Опишите необходимые навыки, технологии и опыт..." required></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Создать вакансию</button>
+                            <a href="{{ url_for('employer.dashboard') }}" class="btn btn-outline-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

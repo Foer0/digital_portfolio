@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('seeker.dashboard') }}">Личный кабинет</a></li>
+<li class="breadcrumb-item active">Редактирование портфолио</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white">
+                    <h4 class="mb-0">Мое портфолио</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Название портфолио *</label>
+                                <input type="text" class="form-control" name="title"
+                                       value="{{ portfolio.title if portfolio else '' }}"
+                                       placeholder="Например: Портфолио фронтенд-разработчика" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Профессия/Специальность *</label>
+                                <input type="text" class="form-control" name="profession"
+                                       value="{{ portfolio.profession if portfolio else '' }}"
+                                       placeholder="Например: Frontend Developer" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">О себе</label>
+                            <textarea class="form-control" name="bio" rows="3"
+                                      placeholder="Кратко расскажите о себе, своих интересах и карьерных целях">{{ portfolio.bio if portfolio else '' }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Опыт работы (лет)</label>
+                                <input type="number" class="form-control" name="experience_years"
+                                       value="{{ portfolio.experience_years if portfolio else '' }}"
+                                       min="0" max="50">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Навыки *</label>
+                                <input type="text" class="form-control" name="skills"
+                                       value="{{ portfolio.skills if portfolio else '' }}"
+                                       placeholder="HTML, CSS, JavaScript, Python, React..." required>
+                                <small class="form-text text-muted">Перечислите навыки через запятую</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Образование</label>
+                            <textarea class="form-control" name="education" rows="3"
+                                      placeholder="Учебные заведения, курсы, сертификаты">{{ portfolio.education if portfolio else '' }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Проекты и достижения</label>
+                            <textarea class="form-control" name="projects" rows="4"
+                                      placeholder="Опишите ваши ключевые проекты, достижения и результаты">{{ portfolio.projects if portfolio else '' }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Контактная информация</label>
+                            <textarea class="form-control" name="contact_info" rows="2"
+                                      placeholder="Дополнительные способы связи (телеграм, LinkedIn и т.д.)">{{ portfolio.contact_info if portfolio else '' }}</textarea>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" name="is_public"
+                                   {% if portfolio and portfolio.is_public %}checked{% endif %}>
+                            <label class="form-check-label">Сделать портфолио публичным</label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                {% if portfolio %}Обновить портфолио{% else %}Создать портфолио{% endif %}
+                            </button>
+                            <a href="{{ url_for('seeker.dashboard') }}" class="btn btn-outline-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

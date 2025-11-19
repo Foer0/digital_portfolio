@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero секция с анимированным фоном -->
+<!-- Hero секция с эффектом переливающейся воды -->
+<section class="hero-section py-5 mb-5 text-white">
+    <!-- Эффект пузырьков -->
+    <div class="water-bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4 floating-element">
+                    Цифровой портфель
+                </h1>
+                <p class="lead mb-4">
+                    Найди работу мечты или идеального сотрудника на современной платформе для карьерного роста
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg hover-scale">
+                        Начать сейчас
+                    </a>
+                    <a href="{{ url_for('seeker.vacancies') }}" class="btn btn-outline-light btn-lg hover-scale">
+                        Смотреть вакансии
+                    </a>
+                    {% else %}
+                        {% if current_user.role == 'seeker' %}
+                        <a href="{{ url_for('seeker.vacancies') }}" class="btn btn-light btn-lg hover-scale">
+                            Найти работу
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('employer.create_vacancy') }}" class="btn btn-light btn-lg hover-scale">
+                            Разместить вакансию
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <div class="floating-element" style="animation-delay: 1s;">
+                        <i class="bi bi-briefcase-fill" style="font-size: 8rem; color: var(--beige);"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Преимущества -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="fw-bold">Почему выбирают нас</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 hover-scale text-center">
+                    <div class="card-body">
+                        <div class="floating-element" style="animation-delay: 0.5s;">
+                            <i class="bi bi-person-badge-fill" style="font-size: 3rem; color: var(--light-green);"></i>
+                        </div>
+                        <h5 class="card-title mt-3">Для соискателей</h5>
+                        <p class="card-text">
+                            Создайте профессиональное портфолио, находите подходящие вакансии
+                            и отслеживайте свои отклики
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 hover-scale text-center">
+                    <div class="card-body">
+                        <div class="floating-element" style="animation-delay: 1s;">
+                            <i class="bi bi-building-fill" style="font-size: 3rem; color: var(--light-green);"></i>
+                        </div>
+                        <h5 class="card-title mt-3">Для работодателей</h5>
+                        <p class="card-text">
+                            Размещайте вакансии, находите квалифицированных специалистов
+                            и управляйте откликами
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 hover-scale text-center">
+                    <div class="card-body">
+                        <div class="floating-element" style="animation-delay: 1.5s;">
+                            <i class="bi bi-graph-up-arrow" style="font-size: 3rem; color: var(--light-green);"></i>
+                        </div>
+                        <h5 class="card-title mt-3">Аналитика</h5>
+                        <p class="card-text">
+                            Получайте статистику по вакансиям и откликам,
+                            чтобы принимать взвешенные решения
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Последние вакансии -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="fw-bold">Свежие вакансии</h2>
+                <p class="text-muted">Новые возможности для вашей карьеры</p>
+            </div>
+            <div class="col-auto">
+                <a href="{{ url_for('seeker.vacancies') }}" class="btn btn-outline-dark">
+                    Все вакансии
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            {% if vacancies %}
+                {% for vacancy in vacancies %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 hover-scale">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vacancy.title }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ vacancy.company.company_name }}</h6>
+                            <p class="card-text">{{ vacancy.description[:100] }}...</p>
+
+                            <div class="mb-2">
+                                {% if vacancy.salary_min and vacancy.salary_max %}
+                                <strong>{{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.</strong>
+                                {% elif vacancy.salary_min %}
+                                <strong>от {{ vacancy.salary_min }} руб.</strong>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ vacancy.experience_level }}</small>
+                                <small class="text-muted">{{ vacancy.employment_type }}</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            {% if current_user.is_authenticated and current_user.role == 'seeker' %}
+                            <button class="btn btn-primary btn-sm w-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#vacancyModal{{ vacancy.id }}">
+                                Подробнее
+                            </button>
+                            {% else %}
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm w-100">
+                                Зарегистрируйтесь как соискатель для просмотра
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="col-12">
+                <div class="text-center py-4">
+                    <p class="text-muted">Пока нет активных вакансий</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Модальные окна для вакансий -->
+{% for vacancy in vacancies %}
+<div class="modal fade" id="vacancyModal{{ vacancy.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ vacancy.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>О компании</h6>
+                <p>{{ vacancy.company.description or 'Информация о компании не указана' }}</p>
+
+                <h6>Описание вакансии</h6>
+                <p>{{ vacancy.description }}</p>
+
+                <h6>Требования</h6>
+                <p>{{ vacancy.requirements }}</p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Зарплата:</strong><br>
+                        {% if vacancy.salary_min and vacancy.salary_max %}
+                            {{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.
+                        {% elif vacancy.salary_min %}
+                            от {{ vacancy.salary_min }} руб.
+                        {% elif vacancy.salary_max %}
+                            до {{ vacancy.salary_max }} руб.
+                        {% else %}
+                            не указана
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Опыт:</strong><br>
+                        {{ vacancy.experience_level }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Тип занятости:</strong><br>
+                        {{ vacancy.employment_type }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Локация:</strong><br>
+                        {{ vacancy.location or 'Не указана' }}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                {% if current_user.is_authenticated and current_user.role == 'seeker' %}
+                <a href="{{ url_for('seeker.vacancies') }}?search={{ vacancy.title|urlencode }}"
+                   class="btn btn-primary">
+                    Откликнуться
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
