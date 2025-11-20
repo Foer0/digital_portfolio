@@ -13,6 +13,38 @@
         <span class="badge bg-primary">Всего: {{ vacancies|length }}</span>
     </div>
 
+    <!-- Панель сортировки -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label for="sort" class="col-form-label">Сортировать по:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="sort" id="sort" class="form-select">
+                        <option value="id" {% if sort_by=='id' %}selected{% endif %}>ID</option>
+                        <option value="title" {% if sort_by=='title' %}selected{% endif %}>Названию</option>
+                        <option value="created_at" {% if sort_by=='created_at' %}selected{% endif %}>Дате создания</option>
+                        <option value="is_approved" {% if sort_by=='is_approved' %}selected{% endif %}>Статусу модерации</option>
+                        <option value="is_active" {% if sort_by=='is_active' %}selected{% endif %}>Активности</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select name="order" class="form-select">
+                        <option value="asc" {% if order=='asc' %}selected{% endif %}>По возрастанию</option>
+                        <option value="desc" {% if order=='desc' %}selected{% endif %}>По убыванию</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Применить</button>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('admin.manage_vacancies') }}" class="btn btn-secondary">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card hover-scale">
         <div class="card-header bg-dark-green text-white">
             <h6 class="mb-0">Список вакансий</h6>
@@ -23,13 +55,33 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Должность</th>
+                            <th>ID
+                                {% if sort_by == 'id' %}
+                                    {% if order == 'asc' %}↑{% else %}↓{% endif %}
+                                {% endif %}
+                            </th>
+                            <th>Должность
+                                {% if sort_by == 'title' %}
+                                    {% if order == 'asc' %}↑{% else %}↓{% endif %}
+                                {% endif %}
+                            </th>
                             <th>Компания</th>
                             <th>Работодатель</th>
-                            <th>Статус</th>
-                            <th>Модерация</th>
-                            <th>Дата создания</th>
+                            <th>Статус
+                                {% if sort_by == 'is_active' %}
+                                    {% if order == 'asc' %}↑{% else %}↓{% endif %}
+                                {% endif %}
+                            </th>
+                            <th>Модерация
+                                {% if sort_by == 'is_approved' %}
+                                    {% if order == 'asc' %}↑{% else %}↓{% endif %}
+                                {% endif %}
+                            </th>
+                            <th>Дата создания
+                                {% if sort_by == 'created_at' %}
+                                    {% if order == 'asc' %}↑{% else %}↓{% endif %}
+                                {% endif %}
+                            </th>
                             <th>Действия</th>
                         </tr>
                     </thead>
@@ -37,7 +89,12 @@
                         {% for vacancy in vacancies %}
                         <tr>
                             <td>{{ vacancy.id }}</td>
-                            <td>{{ vacancy.title }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.view_vacancy', vacancy_id=vacancy.id) }}"
+                                   class="text-decoration-none fw-bold">
+                                    {{ vacancy.title }}
+                                </a>
+                            </td>
                             <td>{{ vacancy.company.company_name }}</td>
                             <td>{{ vacancy.employer.name }}</td>
                             <td>
@@ -53,6 +110,12 @@
                             <td>{{ vacancy.created_at.strftime('%d.%m.%Y') }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
+                                    <!-- Кнопка просмотра -->
+                                    <a href="{{ url_for('admin.view_vacancy', vacancy_id=vacancy.id) }}"
+                                       class="btn btn-outline-info" title="Просмотреть вакансию">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
                                     <!-- Кнопки модерации -->
                                     {% if not vacancy.is_approved %}
                                     <form method="POST" action="{{ url_for('admin.approve_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">

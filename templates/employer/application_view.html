@@ -3,7 +3,7 @@
 {% block breadcrumbs %}
 {{ super() }}
 <li class="breadcrumb-item"><a href="{{ url_for('employer.dashboard') }}">Кабинет работодателя</a></li>
-<li class="breadcrumb-item active">Просмотр отклика</li>
+<li class="breadcrumb-item active">Просмотр заявки</li>
 {% endblock %}
 
 {% block content %}
@@ -11,88 +11,134 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card hover-scale">
-                <div class="card-header bg-dark-green text-white">
-                    <h4 class="mb-0">Отклик на вакансию</h4>
+                <div class="card-header bg-dark-green text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Заявка на вакансию</h4>
+                    <span class="badge
+                        {% if application.status == 'pending' %}bg-warning
+                        {% elif application.status == 'accepted' %}bg-success
+                        {% elif application.status == 'rejected' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                        {{ application.status }}
+                    </span>
                 </div>
                 <div class="card-body">
-                    <!-- Информация о вакансии -->
-                    <div class="row mb-4 p-3 bg-light rounded">
-                        <div class="col-md-8">
-                            <h5>Вакансия: {{ application.vacancy.title }}</h5>
-                            <p class="mb-1"><strong>Компания:</strong> {{ application.vacancy.company.company_name }}</p>
-                            <p class="mb-0"><strong>Дата отклика:</strong> {{ application.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <span class="badge
-                                {% if application.status == 'pending' %}bg-warning
-                                {% elif application.status == 'accepted' %}bg-success
-                                {% elif application.status == 'rejected' %}bg-danger
-                                {% else %}bg-secondary{% endif %}">
-                                {{ application.status }}
-                            </span>
-                        </div>
-                    </div>
-
                     <!-- Информация о соискателе -->
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <h5>Соискатель</h5>
                             <p><strong>Имя:</strong> {{ application.seeker.name }}</p>
                             <p><strong>Email:</strong> {{ application.seeker.email }}</p>
+
                             {% if application.portfolio %}
-                            <p>
-                                <a href="{{ url_for('employer.view_portfolio', portfolio_id=application.portfolio.id) }}"
-                                   class="btn btn-sm btn-outline-primary">
-                                    Просмотреть портфолио
-                                </a>
-                            </p>
+                            <p><strong>Портфолио:</strong> {{ application.portfolio.title }}</p>
+                            <p><strong>Профессия:</strong> {{ application.portfolio.profession }}</p>
                             {% endif %}
                         </div>
-                        <div class="col-md-6 text-end">
-                            <div class="floating-element">
-                                <i class="bi bi-person-circle" style="font-size: 4rem; color: var(--light-green);"></i>
-                            </div>
+                        <div class="col-md-6">
+                            <h5>Вакансия</h5>
+                            <p><strong>Должность:</strong> {{ application.vacancy.title }}</p>
+                            <p><strong>Компания:</strong> {{ application.vacancy.company.company_name }}</p>
+                            <p><strong>Дата отклика:</strong> {{ application.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
                         </div>
                     </div>
 
                     <!-- Сопроводительное письмо -->
+                    {% if application.cover_letter %}
                     <div class="mb-4">
                         <h5 class="border-bottom pb-2">Сопроводительное письмо</h5>
-                        {% if application.cover_letter %}
-                        <div class="cover-letter-content p-3 bg-light rounded">
+                        <div class="bg-light p-3 rounded">
                             {{ application.cover_letter|replace('\n', '<br>')|safe }}
                         </div>
-                        {% else %}
-                        <p class="text-muted">Соискатель не написал сопроводительное письмо</p>
-                        {% endif %}
                     </div>
+                    {% endif %}
 
-                    <!-- Действия -->
+                    <!-- Причина отказа (если есть) -->
+                    {% if application.rejection_reason %}
                     <div class="mb-4">
-                        <h5 class="border-bottom pb-2">Действия</h5>
-                        <div class="btn-group">
-                            <form method="POST" action="{{ url_for('employer.update_application_status', application_id=application.id) }}" class="d-inline">
-                                <input type="hidden" name="status" value="reviewed">
-                                <button type="submit" class="btn btn-outline-info">Отметить как просмотренное</button>
-                            </form>
-                            <form method="POST" action="{{ url_for('employer.update_application_status', application_id=application.id) }}" class="d-inline">
-                                <input type="hidden" name="status" value="accepted">
-                                <button type="submit" class="btn btn-outline-success">Принять</button>
-                            </form>
-                            <form method="POST" action="{{ url_for('employer.update_application_status', application_id=application.id) }}" class="d-inline">
-                                <input type="hidden" name="status" value="rejected">
-                                <button type="submit" class="btn btn-outline-danger">Отклонить</button>
-                            </form>
+                        <h5 class="border-bottom pb-2 text-danger">Причина отказа</h5>
+                        <div class="alert alert-danger">
+                            {{ application.rejection_reason }}
                         </div>
                     </div>
-                </div>
-                <div class="card-footer bg-transparent">
-                    <a href="{{ url_for('employer.dashboard') }}" class="btn btn-outline-secondary">
-                        ← Назад к кабинету
-                    </a>
+                    {% endif %}
+
+                    <!-- Действия с заявкой -->
+                    <div class="mt-4 pt-3 border-top">
+                        <h5>Изменить статус заявки</h5>
+                        <form method="POST" action="{{ url_for('employer.update_application_status', application_id=application.id) }}" id="statusForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Новый статус</label>
+                                        <select name="status" class="form-select" id="statusSelect">
+                                            <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>На рассмотрении</option>
+                                            <option value="reviewed" {% if application.status == 'reviewed' %}selected{% endif %}>Просмотрено</option>
+                                            <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Принято</option>
+                                            <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Отклонено</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Поле для причины отказа (показывается только при выборе "rejected") -->
+                            <div class="mb-3" id="rejectionReasonField" style="display: none;">
+                                <label class="form-label">Причина отказа *</label>
+                                <textarea class="form-control" name="rejection_reason" rows="3"
+                                          placeholder="Укажите причину отказа соискателю...">{{ application.rejection_reason or '' }}</textarea>
+                                <small class="form-text text-muted">Это поле обязательно для заполнения при отклонении заявки</small>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Обновить статус</button>
+                                {% if application.portfolio %}
+                                <a href="{{ url_for('employer.view_portfolio', portfolio_id=application.portfolio.id) }}"
+                                   class="btn btn-outline-info">Просмотреть портфолио</a>
+                                {% endif %}
+                                <a href="{{ url_for('employer.dashboard') }}" class="btn btn-outline-secondary">Назад</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// JavaScript для показа/скрытия поля причины отказа
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('statusSelect');
+    const rejectionReasonField = document.getElementById('rejectionReasonField');
+    const statusForm = document.getElementById('statusForm');
+
+    function toggleRejectionReason() {
+        if (statusSelect.value === 'rejected') {
+            rejectionReasonField.style.display = 'block';
+        } else {
+            rejectionReasonField.style.display = 'none';
+        }
+    }
+
+    // Валидация формы при отправке
+    statusForm.addEventListener('submit', function(event) {
+        if (statusSelect.value === 'rejected') {
+            const rejectionReason = document.querySelector('textarea[name="rejection_reason"]').value.trim();
+            if (!rejectionReason) {
+                event.preventDefault();
+                alert('Пожалуйста, укажите причину отказа перед отправкой.');
+                return false;
+            }
+        }
+    });
+
+    // Инициализация при загрузке
+    toggleRejectionReason();
+
+    // Обработчик изменения статуса
+    statusSelect.addEventListener('change', toggleRejectionReason);
+});
+</script>
 {% endblock %}

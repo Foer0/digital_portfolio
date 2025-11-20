@@ -42,9 +42,11 @@ def edit_portfolio():
         portfolio.projects = request.form.get('projects')
         portfolio.contact_info = request.form.get('contact_info')
         portfolio.is_public = True if request.form.get('is_public') else False
+        # Сбрасываем статус модерации при редактировании
+        portfolio.is_approved = False
 
         db.session.commit()
-        flash('Портфолио обновлено')
+        flash('Портфолио обновлено и отправлено на модерацию')
         return redirect(url_for('seeker.dashboard'))
 
     return render_template('seeker/edit_portfolio.html', portfolio=portfolio)
@@ -104,7 +106,7 @@ def apply(vacancy_id):
     if current_user.role != 'seeker':
         return redirect(url_for('index'))
 
-    vacancy = db.session.get(Vacancy, vacancy_id)  # Исправлено для SQLAlchemy 2.0
+    vacancy = db.session.get(Vacancy, vacancy_id)
     if not vacancy:
         flash('Вакансия не найдена')
         return redirect(url_for('seeker.vacancies'))

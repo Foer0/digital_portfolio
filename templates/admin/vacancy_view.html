@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li class="breadcrumb-item"><a href="{{ url_for('admin.admin_panel') }}">Админ-панель</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('admin.manage_vacancies') }}">Вакансии</a></li>
+<li class="breadcrumb-item active">Просмотр вакансии</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card hover-scale">
+                <div class="card-header bg-dark-green text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">{{ vacancy.title }}</h4>
+                    <div>
+                        <span class="badge {% if vacancy.is_active %}bg-success{% else %}bg-secondary{% endif %} me-1">
+                            {{ 'Активна' if vacancy.is_active else 'Неактивна' }}
+                        </span>
+                        <span class="badge {% if vacancy.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ 'Одобрена' if vacancy.is_approved else 'На модерации' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Информация о компании и работодателе -->
+                    <div class="row mb-4 p-3 bg-light rounded">
+                        <div class="col-md-6">
+                            <h5>Информация о компании</h5>
+                            <p><strong>Компания:</strong> {{ vacancy.company.company_name }}</p>
+                            <p><strong>Отрасль:</strong> {{ vacancy.company.industry or 'Не указана' }}</p>
+                            <p><strong>Email:</strong> {{ vacancy.company.contact_email or vacancy.employer.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Работодатель</h5>
+                            <p><strong>Имя:</strong> {{ vacancy.employer.name }}</p>
+                            <p><strong>Email:</strong> {{ vacancy.employer.email }}</p>
+                            <p><strong>Телефон:</strong> {{ vacancy.company.phone or 'Не указан' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Описание вакансии -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Описание вакансии</h5>
+                        <p>{{ vacancy.description }}</p>
+                    </div>
+
+                    <!-- Требования -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Требования</h5>
+                        <p>{{ vacancy.requirements }}</p>
+                    </div>
+
+                    <!-- Детали вакансии -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Детали</h5>
+                            <p><strong>Зарплата:</strong>
+                                {% if vacancy.salary_min and vacancy.salary_max %}
+                                    {{ vacancy.salary_min }} - {{ vacancy.salary_max }} руб.
+                                {% elif vacancy.salary_min %}
+                                    от {{ vacancy.salary_min }} руб.
+                                {% elif vacancy.salary_max %}
+                                    до {{ vacancy.salary_max }} руб.
+                                {% else %}
+                                    не указана
+                                {% endif %}
+                            </p>
+                            <p><strong>Тип занятости:</strong> {{ vacancy.employment_type or 'Не указан' }}</p>
+                            <p><strong>Уровень опыта:</strong> {{ vacancy.experience_level or 'Не указан' }}</p>
+                            <p><strong>Местоположение:</strong> {{ vacancy.location or 'Не указано' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Даты</h5>
+                            <p><strong>Создана:</strong> {{ vacancy.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                            <p><strong>Обновлена:</strong>
+                                {% if vacancy.updated_at %}
+                                    {{ vacancy.updated_at.strftime('%d.%m.%Y %H:%M') }}
+                                {% else %}
+                                    Не обновлялась
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Отклики на вакансию -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2">Отклики ({{ vacancy.applications|length }})</h5>
+                        {% if vacancy.applications %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Соискатель</th>
+                                        <th>Дата отклика</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for application in vacancy.applications %}
+                                    <tr>
+                                        <td>{{ application.seeker.name }}</td>
+                                        <td>{{ application.created_at.strftime('%d.%m.%Y') }}</td>
+                                        <td>
+                                            <span class="badge
+                                                {% if application.status == 'pending' %}bg-warning
+                                                {% elif application.status == 'accepted' %}bg-success
+                                                {% elif application.status == 'rejected' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ application.status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin.view_portfolio', portfolio_id=application.portfolio.id) }}"
+                                               class="btn btn-sm btn-outline-info">
+                                                Портфолио
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">На эту вакансию пока нет откликов</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Действия администратора -->
+                    <div class="mt-4 pt-3 border-top">
+                        <h5>Действия</h5>
+                        <div class="btn-group">
+                            {% if not vacancy.is_approved %}
+                            <form method="POST" action="{{ url_for('admin.approve_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-lg"></i> Одобрить вакансию
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('admin.reject_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-x-lg"></i> Отклонить вакансию
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for('admin.toggle_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                <button type="submit" class="btn {% if vacancy.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                                    {% if vacancy.is_active %}Деактивировать{% else %}Активировать{% endif %}
+                                </button>
+                            </form>
+
+                            <form method="POST" action="{{ url_for('admin.delete_vacancy', vacancy_id=vacancy.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-danger"
+                                        onclick="return confirm('Вы уверены, что хотите удалить вакансию?')">
+                                    <i class="bi bi-trash"></i> Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('admin.manage_vacancies') }}" class="btn btn-outline-secondary">
+                        ← Назад к списку вакансий
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

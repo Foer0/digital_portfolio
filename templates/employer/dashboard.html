@@ -20,6 +20,18 @@
                         <p><strong>Отрасль:</strong> {{ company.industry or 'Не указана' }}</p>
                         <p><strong>Email:</strong> {{ company.contact_email or 'Не указан' }}</p>
                         <p><strong>Телефон:</strong> {{ company.phone or 'Не указан' }}</p>
+
+                        <!-- Плашка статуса модерации компании -->
+                        {% if not company.is_approved %}
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <i class="bi bi-clock"></i> Ваша компания находится на модерации. После проверки вы сможете создавать вакансии.
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success mt-3" role="alert">
+                            <i class="bi bi-check-circle"></i> Ваша компания одобрена.
+                        </div>
+                        {% endif %}
+
                         <a href="{{ url_for('employer.edit_company') }}" class="btn btn-primary btn-sm">
                             Редактировать
                         </a>
@@ -57,9 +69,16 @@
             <div class="card mb-4">
                 <div class="card-header bg-dark-green text-white d-flex justify-content-between align-items-center">
                     <h5>Мои вакансии</h5>
+                    <!-- Проверяем, одобрена ли компания, чтобы разрешить создание вакансий -->
+                    {% if company and company.is_approved %}
                     <a href="{{ url_for('employer.create_vacancy') }}" class="btn btn-light btn-sm">
                         + Новая вакансия
                     </a>
+                    {% else %}
+                    <button class="btn btn-light btn-sm" disabled title="Сначала дождитесь модерации компании">
+                        + Новая вакансия
+                    </button>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if vacancies %}
@@ -82,6 +101,10 @@
                                             <span class="badge {% if vacancy.is_active %}bg-success{% else %}bg-secondary{% endif %}">
                                                 {{ 'Активна' if vacancy.is_active else 'Неактивна' }}
                                             </span>
+                                            <br>
+                                            <span class="badge {% if vacancy.is_approved %}bg-success{% else %}bg-warning{% endif %} mt-1">
+                                                {{ 'Одобрена' if vacancy.is_approved else 'На модерации' }}
+                                            </span>
                                         </td>
                                         <td>
                                             {{ vacancy.applications|length }}
@@ -102,9 +125,13 @@
                     {% else %}
                         <p class="text-center">У вас пока нет вакансий</p>
                         <div class="text-center">
+                            {% if company and company.is_approved %}
                             <a href="{{ url_for('employer.create_vacancy') }}" class="btn btn-primary">
                                 Создать первую вакансию
                             </a>
+                            {% else %}
+                            <p class="text-warning">Для создания вакансий дождитесь модерации компании</p>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>
@@ -158,12 +185,17 @@
                                                    title="Просмотреть заявку">
                                                     <i class="bi bi-envelope-open"></i>
                                                 </a>
-                                                {% if app.portfolio %}
+                                                {% if app.portfolio and app.portfolio.is_approved %}
                                                 <a href="{{ url_for('employer.view_portfolio', portfolio_id=app.portfolio.id) }}"
                                                    class="btn btn-outline-info"
                                                    title="Просмотреть портфолио">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
+                                                {% else %}
+                                                <button class="btn btn-outline-secondary" disabled
+                                                        title="Портфолио на модерации">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
                                                 {% endif %}
                                             </div>
                                         </td>
@@ -244,12 +276,17 @@
                                        title="Просмотреть заявку">
                                         <i class="bi bi-envelope-open"></i>
                                     </a>
-                                    {% if app.portfolio %}
+                                    {% if app.portfolio and app.portfolio.is_approved %}
                                     <a href="{{ url_for('employer.view_portfolio', portfolio_id=app.portfolio.id) }}"
                                        class="btn btn-sm btn-outline-info"
                                        title="Просмотреть портфолио">
                                         <i class="bi bi-eye"></i>
                                     </a>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-outline-secondary" disabled
+                                            title="Портфолио на модерации">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                     {% endif %}
                                     <span class="badge
                                         {% if app.status == 'pending' %}bg-warning

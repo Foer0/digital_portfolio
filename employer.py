@@ -31,6 +31,10 @@ def edit_company():
     company = Company.query.filter_by(user_id=current_user.id).first()
 
     if request.method == 'POST':
+        if not company:
+            company = Company(user_id=current_user.id)
+            db.session.add(company)
+
         company.company_name = request.form.get('company_name')
         company.description = request.form.get('description')
         company.industry = request.form.get('industry')
@@ -38,9 +42,11 @@ def edit_company():
         company.contact_email = request.form.get('contact_email')
         company.phone = request.form.get('phone')
         company.address = request.form.get('address')
+        # Сбрасываем статус модерации при редактировании
+        company.is_approved = False
 
         db.session.commit()
-        flash('Информация о компании обновлена')
+        flash('Информация о компании обновлена и отправлена на модерацию')
         return redirect(url_for('employer.dashboard'))
 
     return render_template('employer/edit_company.html', company=company)
@@ -53,6 +59,15 @@ def create_vacancy():
         return redirect(url_for('index'))
 
     company = Company.query.filter_by(user_id=current_user.id).first()
+
+    # Проверяем, есть ли компания и одобрена ли она
+    if not company:
+        flash('Сначала заполните информацию о компании')
+        return redirect(url_for('employer.edit_company'))
+
+    if not company.is_approved:
+        flash('Ваша компания находится на модерации. Вы не можете создавать вакансии до завершения проверки.')
+        return redirect(url_for('employer.dashboard'))
 
     if request.method == 'POST':
         vacancy = Vacancy(
@@ -70,7 +85,7 @@ def create_vacancy():
 
         db.session.add(vacancy)
         db.session.commit()
-        flash('Вакансия создана')
+        flash('Вакансия создана и отправлена на модерацию')
         return redirect(url_for('employer.dashboard'))
 
     return render_template('employer/create_vacancy.html')
@@ -83,9 +98,14 @@ def view_portfolio(portfolio_id):
         flash('Доступ запрещен')
         return redirect(url_for('index'))
 
-    portfolio = db.session.get(Portfolio, portfolio_id)  # Исправлено для SQLAlchemy 2.0
+    portfolio = db.session.get(Portfolio, portfolio_id)
     if not portfolio:
         flash('Портфолио не найдено')
+        return redirect(url_for('employer.dashboard'))
+
+    # Проверяем, что портфолио одобрено модератором
+    if not portfolio.is_approved:
+        flash('Это портфолио находится на модерации и недоступно для просмотра')
         return redirect(url_for('employer.dashboard'))
 
     # Проверяем, что портфолио публичное или работодатель имеет отношение к откликам
@@ -110,7 +130,7 @@ def update_application_status(application_id):
         flash('Доступ запрещен')
         return redirect(url_for('index'))
 
-    application = db.session.get(Application, application_id)  # Исправлено для SQLAlchemy 2.0
+    application = db.session.get(Application, application_id)
     if not application:
         flash('Заявка не найдена')
         return redirect(url_for('employer.dashboard'))
@@ -121,10 +141,28 @@ def update_application_status(application_id):
         return redirect(url_for('employer.dashboard'))
 
     new_status = request.form.get('status')
+    rejection_reason = request.form.get('rejection_reason', '').strip()
+
+    # Проверяем, что при отклонении указана причина
+    if new_status == 'rejected' and not rejection_reason:
+        flash('При отклонении заявки необходимо указать причину отказа')
+        return redirect(url_for('employer.view_application', application_id=application_id))
+
     if new_status in ['pending', 'reviewed', 'accepted', 'rejected']:
         application.status = new_status
+
+        # Сохраняем причину отказа только при статусе rejected
+        if new_status == 'rejected':
+            application.rejection_reason = rejection_reason
+        else:
+            application.rejection_reason = None
+
         db.session.commit()
-        flash(f'Статус отклика изменен на: {new_status}')
+
+        if new_status == 'rejected':
+            flash(f'Отклик отклонен. Причина: {rejection_reason}')
+        else:
+            flash(f'Статус отклика изменен на: {new_status}')
 
     return redirect(url_for('employer.view_application', application_id=application_id))
 
@@ -136,7 +174,7 @@ def view_application(application_id):
         flash('Доступ запрещен')
         return redirect(url_for('index'))
 
-    application = db.session.get(Application, application_id)  # Исправлено для SQLAlchemy 2.0
+    application = db.session.get(Application, application_id)
     if not application:
         flash('Заявка не найдена')
         return redirect(url_for('employer.dashboard'))

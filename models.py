@@ -32,9 +32,6 @@ class User(UserMixin, db.Model):
         return re.match(pattern, email) is not None
 
 
-# Остальные модели остаются без изменений...
-
-
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -47,6 +44,8 @@ class Company(db.Model):
     address = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # Новое поле для модерации компаний
+    is_approved = db.Column(db.Boolean, default=False, nullable=False)
 
 
 class Portfolio(db.Model):
@@ -63,6 +62,8 @@ class Portfolio(db.Model):
     is_public = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    # Новое поле для модерации портфолио
+    is_approved = db.Column(db.Boolean, default=False, nullable=False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -101,6 +102,8 @@ class Application(db.Model):
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
     cover_letter = db.Column(db.Text)
     status = db.Column(db.String(50), default='pending')  # pending, reviewed, rejected, accepted
+    # Новое поле для причины отказа
+    rejection_reason = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     seeker = db.relationship('User', backref='applications', lazy=True)
